@@ -108,7 +108,7 @@ function MapPanel({
           </radialGradient>
         </defs>
         <Geographies geography={mapUrl}>
-          {({ geographies }) =>
+          {({ geographies }: { geographies: Array<{ rsmKey: string; properties?: { name?: string } }> }) =>
             geographies
               .filter((geo) => {
                 const name = String(geo.properties?.name ?? "");
