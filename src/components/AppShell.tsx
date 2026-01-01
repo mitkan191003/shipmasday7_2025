@@ -25,6 +25,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [mobileWarningOpen, setMobileWarningOpen] = useState(false);
   const [demoMode, setDemoMode] = useState(false);
   const [demoReadOnlyOpen, setDemoReadOnlyOpen] = useState(false);
+  const [mapFilter, setMapFilter] = useState<"all" | "visited" | "unvisited">("all");
 
   useEffect(() => {
     const loadSession = async () => {
@@ -111,6 +112,15 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }, [userId, demoMode]);
 
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.park_id)), [visits]);
+  const parksForMap = useMemo(() => {
+    if (mapFilter === "visited") {
+      return parks.filter((park) => visitedIds.has(park.id));
+    }
+    if (mapFilter === "unvisited") {
+      return parks.filter((park) => !visitedIds.has(park.id));
+    }
+    return parks;
+  }, [parks, visitedIds, mapFilter]);
   const activePark = parks.find((park) => park.id === activeParkId) ?? null;
   const entriesForActive = entries.filter((entry) => entry.park_id === activeParkId);
   const stateIndex = useMemo(() => buildStateIndex(parks), [parks]);
@@ -302,13 +312,53 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   Hover for park snapshots, click a marker to visit, or tap a state label to browse its list.
                 </p>
               </div>
-              <div className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-                {visits.length} parks visited
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                  {visits.length} parks visited
+                </div>
+                <div className="rounded-[28px] bg-white/70 px-3 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Filters</p>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMapFilter("visited")}
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                        mapFilter === "visited"
+                          ? "bg-amber-300 text-slate-900"
+                          : "bg-white/80 text-slate-600"
+                      } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
+                    >
+                      Visited park
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMapFilter("unvisited")}
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                        mapFilter === "unvisited"
+                          ? "bg-amber-300 text-slate-900"
+                          : "bg-white/80 text-slate-600"
+                      } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
+                    >
+                      Unvisited park
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMapFilter("all")}
+                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                        mapFilter === "all"
+                          ? "bg-amber-300 text-slate-900"
+                          : "bg-white/80 text-slate-600"
+                      } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
+                    >
+                      All parks
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="mt-6">
               <ParkMap
-                parks={parks}
+                parks={parksForMap}
                 visitedIds={visitedIds}
                 activeState={selectedState}
                 onSelectPark={handleSelectPark}

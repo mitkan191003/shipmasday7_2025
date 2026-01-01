@@ -321,23 +321,6 @@ export default function ParkMap({
           mapClassName="h-56 w-full"
         />
       </div>
-
-      <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-        <div className="flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-          <span className="h-3 w-3 rounded-full bg-gradient-to-br from-amber-300 via-rose-200 to-sky-200" />
-          Unvisited park
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-          <span className="h-3 w-3 rounded-full bg-slate-200" />
-          Visited park
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-          Click a state to browse its parks
-        </div>
-        <div className="flex items-center gap-2 rounded-full bg-white/70 px-4 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-          {mappableParks.length} parks plotted
-        </div>
-      </div>
     </div>
   );
 }
