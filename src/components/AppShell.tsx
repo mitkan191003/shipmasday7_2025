@@ -22,6 +22,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [congratsOpen, setCongratsOpen] = useState(false);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [mobileWarningOpen, setMobileWarningOpen] = useState(false);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -42,6 +43,16 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     return () => {
       data.subscription.unsubscribe();
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const dismissed = window.sessionStorage.getItem("mobile-warning-dismissed");
+    if (dismissed) return;
+    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    if (isMobile) {
+      setMobileWarningOpen(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -330,6 +341,34 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
         >
           Start journaling
+        </button>
+      </Modal>
+
+      <Modal
+        open={mobileWarningOpen}
+        title="Heads up"
+        onClose={() => {
+          setMobileWarningOpen(false);
+          if (typeof window !== "undefined") {
+            window.sessionStorage.setItem("mobile-warning-dismissed", "true");
+          }
+        }}
+      >
+        <p className="text-sm text-slate-600">
+          This experience is not optimized for mobile yet. For the best map and journaling flow, please use a desktop
+          or larger screen.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setMobileWarningOpen(false);
+            if (typeof window !== "undefined") {
+              window.sessionStorage.setItem("mobile-warning-dismissed", "true");
+            }
+          }}
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+        >
+          Got it
         </button>
       </Modal>
     </div>
