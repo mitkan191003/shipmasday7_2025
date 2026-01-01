@@ -1,0 +1,337 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { JournalEntry, Park, ParkVisit } from "@/lib/parkTypes";
+import { buildStateIndex } from "@/lib/parkUtils";
+import { parkImages } from "@/data/parkImages";
+import { supabase } from "@/lib/supabaseClient";
+import AuthPanel from "@/components/AuthPanel";
+import JournalPanel from "@/components/JournalPanel";
+import Modal from "@/components/Modal";
+import ParkMap from "@/components/ParkMap";
+
+export default function AppShell({ parks }: { parks: Park[] }) {
+  const [sessionReady, setSessionReady] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [visits, setVisits] = useState<ParkVisit[]>([]);
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [activeParkId, setActiveParkId] = useState<string | null>(null);
+  const [pendingPark, setPendingPark] = useState<Park | null>(null);
+  const [confirmVisitOpen, setConfirmVisitOpen] = useState(false);
+  const [congratsOpen, setCongratsOpen] = useState(false);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+      setUserId(session?.user.id ?? null);
+      setUserEmail(session?.user.email ?? null);
+      setSessionReady(true);
+    };
+
+    loadSession();
+
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user.id ?? null);
+      setUserEmail(session?.user.email ?? null);
+    });
+
+    return () => {
+      data.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      setVisits([]);
+      setEntries([]);
+      return;
+    }
+
+    const loadUserData = async () => {
+      const [{ data: visitData }, { data: entryData }] = await Promise.all([
+        supabase
+          .from("park_visits")
+          .select("id, park_id, first_visited_at, created_at")
+          .eq("user_id", userId),
+        supabase
+          .from("journal_entries")
+          .select("id, park_id, visit_date, notes, image_url, image_path, created_at")
+          .eq("user_id", userId)
+          .order("visit_date", { ascending: false }),
+      ]);
+      setVisits(visitData ?? []);
+      setEntries(entryData ?? []);
+    };
+
+    loadUserData();
+  }, [userId]);
+
+  const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.park_id)), [visits]);
+  const activePark = parks.find((park) => park.id === activeParkId) ?? null;
+  const entriesForActive = entries.filter((entry) => entry.park_id === activeParkId);
+  const stateIndex = useMemo(() => buildStateIndex(parks), [parks]);
+  const stateList = useMemo(() => Array.from(stateIndex.keys()).sort(), [stateIndex]);
+  const selectedStateParks = selectedState ? stateIndex.get(selectedState) ?? [] : [];
+
+  const handleSelectPark = (park: Park) => {
+    if (visitedIds.has(park.id)) {
+      setActiveParkId(park.id);
+      return;
+    }
+    setStatusMessage(null);
+    setPendingPark(park);
+    setConfirmVisitOpen(true);
+  };
+
+  const handleConfirmVisit = async () => {
+    if (!pendingPark || !userId) return;
+    setStatusMessage(null);
+    const firstVisited = new Date().toISOString().slice(0, 10);
+    const { data, error } = await supabase
+      .from("park_visits")
+      .insert({ user_id: userId, park_id: pendingPark.id, first_visited_at: firstVisited })
+      .select("id, park_id, first_visited_at, created_at")
+      .single();
+
+    if (error) {
+      setStatusMessage(error.message);
+      return;
+    }
+
+    if (data) {
+      setVisits((current) => [...current, data]);
+    }
+    setActiveParkId(pendingPark.id);
+    setPendingPark(null);
+    setConfirmVisitOpen(false);
+    setCongratsOpen(true);
+  };
+
+  const handleCreateEntry = async (payload: {
+    parkId: string;
+    visitDate: string;
+    notes: string;
+    imageFile: File | null;
+  }) => {
+    if (!userId) return;
+    let imageUrl: string | null = null;
+    let imagePath: string | null = null;
+
+    if (payload.imageFile) {
+      const extension = payload.imageFile.name.split(".").pop() || "jpg";
+      imagePath = `${userId}/${payload.parkId}/${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await supabase
+        .storage
+        .from("journal-images")
+        .upload(imagePath, payload.imageFile, {
+          contentType: payload.imageFile.type,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data: publicUrlData } = supabase
+        .storage
+        .from("journal-images")
+        .getPublicUrl(imagePath);
+      imageUrl = publicUrlData.publicUrl;
+    }
+
+    const { data, error } = await supabase
+      .from("journal_entries")
+      .insert({
+        user_id: userId,
+        park_id: payload.parkId,
+        visit_date: payload.visitDate,
+        notes: payload.notes,
+        image_url: imageUrl,
+        image_path: imagePath,
+      })
+      .select("id, park_id, visit_date, notes, image_url, image_path, created_at")
+      .single();
+
+    if (error) {
+      throw error;
+    }
+
+    if (data) {
+      setEntries((current) => [data, ...current]);
+    }
+  };
+
+  if (!sessionReady) {
+    return null;
+  }
+
+  if (!userId) {
+    return <AuthPanel onAuthed={() => setSessionReady(true)} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#f7f1e8,_#e7eef5_45%,_#dde6f1)] px-6 pb-12 text-slate-800">
+      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 py-8">
+        <div>
+          <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Trailkeeper</p>
+          <h1 className="mt-2 text-3xl font-semibold text-slate-800">National Park Journal</h1>
+          <p className="mt-2 text-sm text-slate-500">
+            Track visits, celebrate firsts, and keep the memories flowing.
+          </p>
+        </div>
+        <div className="rounded-[28px] bg-[var(--surface)] px-4 py-3 shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]">
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Signed in</p>
+          <p className="text-sm font-semibold text-slate-700">{userEmail}</p>
+          <button
+            type="button"
+            onClick={() => supabase.auth.signOut()}
+            className="mt-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+          >
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <main className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,_1.2fr)_minmax(0,_0.8fr)]">
+        <section className="space-y-6">
+          <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Explore</p>
+                <h2 className="mt-2 text-2xl font-semibold text-slate-800">Park map</h2>
+                <p className="mt-2 text-sm text-slate-500">
+                  Hover for park snapshots, click a marker to visit, or tap a state label to browse its list.
+                </p>
+              </div>
+              <div className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                {visits.length} parks visited
+              </div>
+            </div>
+            <div className="mt-6">
+              <ParkMap
+                parks={parks}
+                visitedIds={visitedIds}
+                activeState={selectedState}
+                onSelectPark={handleSelectPark}
+                onSelectState={(state) => setSelectedState(state)}
+                parkImages={parkImages}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">States</p>
+                <h3 className="mt-2 text-xl font-semibold text-slate-800">Browse by state</h3>
+              </div>
+              {selectedState ? (
+                <button
+                  type="button"
+                  onClick={() => setSelectedState(null)}
+                  className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                >
+                  Clear selection
+                </button>
+              ) : null}
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {stateList.map((state) => (
+                <button
+                  key={state}
+                  type="button"
+                  onClick={() => setSelectedState(state)}
+                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                    selectedState === state
+                      ? "bg-amber-300 text-slate-900"
+                      : "bg-white/70 text-slate-600"
+                  } shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]`}
+                >
+                  {state}
+                </button>
+              ))}
+            </div>
+            {selectedState ? (
+              <div className="mt-6 rounded-3xl bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  {selectedState} parks
+                </h4>
+                <div className="mt-3 grid gap-2">
+                  {selectedStateParks.map((park) => (
+                    <button
+                      key={park.id}
+                      type="button"
+                      onClick={() => handleSelectPark(park)}
+                      className="flex items-center justify-between rounded-2xl bg-white/70 px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+                    >
+                      <span>{park.name}</span>
+                      <span className="text-xs text-slate-400">{park.city}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <aside className="space-y-6">
+          <JournalPanel
+            park={activePark}
+            entries={entriesForActive}
+            visited={activePark ? visitedIds.has(activePark.id) : false}
+            onCreateEntry={handleCreateEntry}
+          />
+        </aside>
+      </main>
+
+      <Modal
+        open={confirmVisitOpen}
+        title={pendingPark ? `First visit to ${pendingPark.name}?` : "Confirm visit"}
+        onClose={() => {
+          setConfirmVisitOpen(false);
+          setPendingPark(null);
+        }}
+      >
+        <p className="text-sm text-slate-600">
+          Mark this park as visited to unlock its journal timeline.
+        </p>
+        {statusMessage ? <p className="mt-3 text-sm text-amber-700">{statusMessage}</p> : null}
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={handleConfirmVisit}
+            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          >
+            Yes, I visited
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmVisitOpen(false);
+              setPendingPark(null);
+            }}
+            className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+          >
+            Not yet
+          </button>
+        </div>
+      </Modal>
+
+      <Modal open={congratsOpen} title="Congratulations!" onClose={() => setCongratsOpen(false)}>
+        <p className="text-sm text-slate-600">
+          New park unlocked. Add your first journal entry while the memory is fresh.
+        </p>
+        <button
+          type="button"
+          onClick={() => setCongratsOpen(false)}
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+        >
+          Start journaling
+        </button>
+      </Modal>
+    </div>
+  );
+}

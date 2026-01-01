@@ -1,8 +1,8 @@
 Park,Nearest City,State(s),Latitude,Longitude
-Acadia National Park,Bar Harbor,Maine,44.338974,-68.273430
+Acadia National Park,Bar Harbor,Maine,44.35,-68.21
 American Samoa National Park,Pago Pago,American Samoa,-14.25,-170.68
-Arches National Park,Moab,Utah,38.68,-109.93
-Badlands National Park,Wall,South Dakota,43.75,-102.5
+Arches National Park,Moab,Utah,38.68,-109.57
+Badlands National Park,Wall,South Dakota,43.75,-102.50
 Big Bend National Park,Study Butte,Texas,29.25,-103.25
 Biscayne National Park,Homestead,Florida,25.65,-80.08
 Black Canyon of the Gunnison National Park,Montrose,Colorado,38.57,-107.72
@@ -12,13 +12,13 @@ Capitol Reef National Park,Torrey,Utah,38.20,-111.17
 Carlsbad Caverns National Park,Carlsbad,New Mexico,32.17,-104.44
 Channel Islands National Park,Oxnard,California,34.01,-119.42
 Congaree National Park,Hopkins,South Carolina,33.78,-80.78
-Crater Lake National Park,Crater Lake, Oregon,42.94,-122.1
+Crater Lake National Park,Crater Lake,Oregon,42.94,-122.10
 Cuyahoga Valley National Park,Akron,Ohio,41.24,-81.55
 Death Valley National Park,Furnace Creek,California/Nevada,36.24,-116.82
-Denali National Park,Healy,Alaska,63.33,-150.5
+Denali National Park,Healy,Alaska,63.33,-150.50
 Dry Tortugas National Park,Key West,Florida,24.63,-82.87
 Everglades National Park,Homestead,Florida,25.32,-80.93
-Gates of the Arctic National Park,Noatak,Alaska,67.78,-153.3
+Gates of the Arctic National Park,Noatak,Alaska,67.78,-153.30
 Gateway Arch National Park,St. Louis,Missouri,38.63,-90.19
 Glacier Bay National Park,Gustavus,Alaska,58.50,-137.00
 Glacier National Park,West Glacier,Montana,48.80,-114.00
@@ -26,40 +26,40 @@ Grand Canyon National Park,Grand Canyon Village,Arizona,36.06,-112.14
 Grand Teton National Park,Jackson,Wyoming,43.73,-110.80
 Great Basin National Park,Baker,Nevada,38.98,-114.30
 Great Sand Dunes National Park,Alamosa,Colorado,37.73,-105.51
-Great Smoky Mountains National Park,Gatlinburg,Tennessee,35.68,-83.53
+Great Smoky Mountains National Park,Gatlinburg,Tennessee/North Carolina,35.68,-83.53
 Guadalupe Mountains National Park,Carlsbad,Texas,31.92,-104.87
 Haleakalā National Park,Kahului,Hawaii,20.72,-156.17
 Hawaiʻi Volcanoes National Park,Volcano,Hawaii,19.38,-155.20
 Hot Springs National Park,Hot Springs,Arkansas,34.51,-93.05
 Indiana Dunes National Park,Porter,Indiana,41.6533,-87.0524
-Isle Royale National Park,Houghton,Michigan,, 
-Joshua Tree National Park,Joshua Tree,California,, 
-Katmai National Park and Preserve,King Salmon,Alaska,58.6224,-155.0127
-Kenai Fjords National Park,Kenai,Alaska,, 
-Kings Canyon National Park,Fresno,California,, 
-Kobuk Valley National Park,Ambler,Alaska,, 
-Lake Clark National Park,Port Alsworth,Alaska,, 
-Lassen Volcanic National Park,Lassen Park,California,, 
-Mammoth Cave National Park,Mammoth Cave,Kentucky,, 
-Mesa Verde National Park,Cortez,Colorado,, 
-Mount Rainier National Park,Paradise,Washington,46.86,-121.70
-National Park of American Samoa,Pago Pago,American Samoa,-14.25,-170.68
-New River Gorge National Park and Preserve,Glen Jean,West Virginia,, 
-North Cascades National Park,Marblemount,Washington,, 
-Olympic National Park,Port Angeles,Washington,47.8039,-123.6664
-Petrified Forest National Park,Petrified Forest,Arizona,, 
-Pinnacles National Park,Paicines,California,36.4915,-121.1972
-Redwood National and State Parks,Crescent City,California,, 
-Rocky Mountain National Park,Estes Park,Colorado,40.34,-105.69
-Saguaro National Park,Tucson,Arizona,, 
-Sequoia National Park,Three Rivers,California,, 
-Shenandoah National Park,Front Royal,Virginia,, 
-Theodore Roosevelt National Park,Medora,North Dakota,, 
-Virgin Islands National Park,St. John,U.S. Virgin Islands,, 
-Voyageurs National Park,International Falls,Minnesota,, 
-White Sands National Park,Alamogordo,New Mexico,, 
-Wind Cave National Park,Hot Springs,South Dakota,, 
-Wrangell–St. Elias National Park and Preserve,Glacier View,Alaska,, 
-Yellowstone National Park,West Yellowstone,Wyoming/Montana/Idaho,, 
-Yosemite National Park,Yosemite Valley,California,37.8488,-119.5572
+Isle Royale National Park,Houghton,Michigan,48.10,-88.55
+Joshua Tree National Park,Joshua Tree,California,33.79,-115.90
+Katmai National Park and Preserve,King Salmon,Alaska,58.50,-155.00
+Kenai Fjords National Park,Kenai,Alaska,59.92,-149.65
+Kings Canyon National Park,Fresno,California,36.80,-118.55
+Kobuk Valley National Park,Ambler,Alaska,67.55,-159.28
+Lake Clark National Park,Port Alsworth,Alaska,60.97,-153.42
+Lassen Volcanic National Park,Lassen Park,California,40.49,-121.51
+Mammoth Cave National Park,Mammoth Cave,Kentucky,37.18,-86.10
+Mesa Verde National Park,Cortez,Colorado,37.18,-108.49
+Mount Rainier National Park,Paradise,Washington,46.85,-121.75
+New River Gorge National Park and Preserve,Glen Jean,West Virginia,37.8908,-81.0558
+North Cascades National Park,Marblemount,Washington,48.70,-121.20
+Olympic National Park,Port Angeles,Washington,47.97,-123.50
+Petrified Forest National Park,Petrified Forest,Arizona,35.07,-109.78
+Pinnacles National Park,Paicines,California,36.48,-121.16
+Redwood National and State Parks,Crescent City,California,41.30,-124.00
+Rocky Mountain National Park,Estes Park,Colorado,40.40,-105.58
+Saguaro National Park,Tucson,Arizona,32.25,-110.50
+Sequoia National Park,Three Rivers,California,36.43,-118.68
+Shenandoah National Park,Front Royal,Virginia,38.53,-78.35
+Theodore Roosevelt National Park,Medora,North Dakota,46.97,-103.45
+Virgin Islands National Park,St. John,U.S. Virgin Islands,18.33,-64.73
+Voyageurs National Park,International Falls,Minnesota,48.50,-92.88
+White Sands National Park,Alamogordo,New Mexico,33.57798,-106.50146
+Wind Cave National Park,Hot Springs,South Dakota,43.57,-103.48
+Wrangell–St. Elias National Park and Preserve,Glacier View,Alaska,61.00,-142.00
+Yellowstone National Park,West Yellowstone,Wyoming/Montana/Idaho,44.60,-110.50
+Yosemite National Park,Yosemite Valley,California,37.83,-119.50
 Zion National Park,Springdale,Utah,37.30,-113.05
+
