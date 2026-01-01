@@ -67,7 +67,11 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
       setVisitDate(new Date().toISOString().slice(0, 10));
       setMessage("Entry added to the timeline.");
     } catch (error) {
-      setMessage("Something went wrong while saving.");
+      if (error instanceof Error && error.message === "DEMO_READ_ONLY") {
+        setMessage(null);
+      } else {
+        setMessage("Something went wrong while saving.");
+      }
     } finally {
       setSaving(false);
     }

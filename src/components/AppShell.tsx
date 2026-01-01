@@ -23,6 +23,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [mobileWarningOpen, setMobileWarningOpen] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
+  const [demoReadOnlyOpen, setDemoReadOnlyOpen] = useState(false);
 
   useEffect(() => {
     const loadSession = async () => {
@@ -49,13 +51,40 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     if (typeof window === "undefined") return;
     const dismissed = window.sessionStorage.getItem("mobile-warning-dismissed");
     if (dismissed) return;
-    const isMobile = window.matchMedia("(max-width: 900px)").matches;
+    const isMobile =
+      window.matchMedia("(max-width: 900px)").matches ||
+      /Mobi|Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
     if (isMobile) {
       setMobileWarningOpen(true);
     }
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.sessionStorage.getItem("demo-mode");
+    if (stored === "true") {
+      setDemoMode(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (demoMode) {
+      const loadDemoData = async () => {
+        const [{ data: visitData }, { data: entryData }] = await Promise.all([
+          supabase.from("demo_park_visits").select("id, park_id, first_visited_at, created_at"),
+          supabase
+            .from("demo_journal_entries")
+            .select("id, park_id, visit_date, notes, image_url, image_path, created_at")
+            .order("visit_date", { ascending: false }),
+        ]);
+        setVisits(visitData ?? []);
+        setEntries(entryData ?? []);
+      };
+
+      loadDemoData();
+      return;
+    }
+
     if (!userId) {
       setVisits([]);
       setEntries([]);
@@ -79,7 +108,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     };
 
     loadUserData();
-  }, [userId]);
+  }, [userId, demoMode]);
 
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.park_id)), [visits]);
   const activePark = parks.find((park) => park.id === activeParkId) ?? null;
@@ -87,6 +116,17 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const stateIndex = useMemo(() => buildStateIndex(parks), [parks]);
   const stateList = useMemo(() => Array.from(stateIndex.keys()).sort(), [stateIndex]);
   const selectedStateParks = selectedState ? stateIndex.get(selectedState) ?? [] : [];
+
+  const setDemoModeEnabled = (enabled: boolean) => {
+    setDemoMode(enabled);
+    if (typeof window !== "undefined") {
+      if (enabled) {
+        window.sessionStorage.setItem("demo-mode", "true");
+      } else {
+        window.sessionStorage.removeItem("demo-mode");
+      }
+    }
+  };
 
   const handleSelectPark = (park: Park) => {
     if (visitedIds.has(park.id)) {
@@ -100,6 +140,11 @@ export default function AppShell({ parks }: { parks: Park[] }) {
 
   const handleConfirmVisit = async () => {
     if (!pendingPark || !userId) return;
+    if (demoMode) {
+      setConfirmVisitOpen(false);
+      setDemoReadOnlyOpen(true);
+      return;
+    }
     setStatusMessage(null);
     const firstVisited = new Date().toISOString().slice(0, 10);
     const { data, error } = await supabase
@@ -129,6 +174,10 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     imageFile: File | null;
   }) => {
     if (!userId) return;
+    if (demoMode) {
+      setDemoReadOnlyOpen(true);
+      throw new Error("DEMO_READ_ONLY");
+    }
     let imageUrl: string | null = null;
     let imagePath: string | null = null;
 
@@ -180,7 +229,38 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }
 
   if (!userId) {
-    return <AuthPanel onAuthed={() => setSessionReady(true)} />;
+    return (
+      <>
+        <AuthPanel onAuthed={() => setSessionReady(true)} onDemoStart={() => setDemoModeEnabled(true)} />
+        <Modal
+          open={mobileWarningOpen}
+          title="Heads up"
+          onClose={() => {
+            setMobileWarningOpen(false);
+            if (typeof window !== "undefined") {
+              window.sessionStorage.setItem("mobile-warning-dismissed", "true");
+            }
+          }}
+        >
+          <p className="text-sm text-slate-600">
+            This experience is not optimized for mobile yet. For the best map and journaling flow, please use a desktop
+            or larger screen.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setMobileWarningOpen(false);
+              if (typeof window !== "undefined") {
+                window.sessionStorage.setItem("mobile-warning-dismissed", "true");
+              }
+            }}
+            className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          >
+            Got it
+          </button>
+        </Modal>
+      </>
+    );
   }
 
   return (
@@ -194,11 +274,16 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           </p>
         </div>
         <div className="rounded-[28px] bg-[var(--surface)] px-4 py-3 shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Signed in</p>
-          <p className="text-sm font-semibold text-slate-700">{userEmail}</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+            {demoMode ? "Demo session" : "Signed in"}
+          </p>
+          <p className="text-sm font-semibold text-slate-700">{demoMode ? "Read-only demo" : userEmail}</p>
           <button
             type="button"
-            onClick={() => supabase.auth.signOut()}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              setDemoModeEnabled(false);
+            }}
             className="mt-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
           >
             Sign out
@@ -341,6 +426,23 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
         >
           Start journaling
+        </button>
+      </Modal>
+
+      <Modal
+        open={demoReadOnlyOpen}
+        title="Demo is read-only"
+        onClose={() => setDemoReadOnlyOpen(false)}
+      >
+        <p className="text-sm text-slate-600">
+          This demo profile is locked. Create an account to add visits or journal entries.
+        </p>
+        <button
+          type="button"
+          onClick={() => setDemoReadOnlyOpen(false)}
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+        >
+          Got it
         </button>
       </Modal>
 
