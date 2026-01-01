@@ -18,11 +18,7 @@ type JournalPanelProps = {
 };
 
 const imageQuotes = [
-  "One pic to rule them all. Choose wisely.",
   "You only get to add one pic so make sure it's the one with your eyes open!",
-  "Pick the hero shot. The rest live in your camera roll.",
-  "This is your park's cover art. Make it iconic.",
-  "One image. Infinite bragging rights.",
 ];
 
 export default function JournalPanel({ park, entries, visited, onCreateEntry }: JournalPanelProps) {
@@ -31,6 +27,8 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [entryModalOpen, setEntryModalOpen] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
@@ -164,9 +162,14 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
         ) : (
           <div className="space-y-5">
             {sortedEntries.map((entry) => (
-              <div
+              <button
                 key={entry.id}
-                className="relative rounded-3xl bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]"
+                type="button"
+                onClick={() => {
+                  setSelectedEntry(entry);
+                  setEntryModalOpen(true);
+                }}
+                className="relative w-full rounded-3xl bg-[var(--surface-alt)] p-4 text-left shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)] transition hover:-translate-y-0.5"
               >
                 <div className="absolute -left-[29px] top-6 h-4 w-4 rounded-full bg-slate-300 shadow-[4px_4px_10px_var(--shadow-dark),-4px_-4px_10px_var(--shadow-light)]" />
                 <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
@@ -181,7 +184,7 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
                   />
                 ) : null}
                 {entry.notes ? <p className="mt-3 text-sm text-slate-600">{entry.notes}</p> : null}
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -210,6 +213,41 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
             className="mt-2 w-full rounded-2xl border border-transparent bg-white/70 px-3 py-2 text-sm text-slate-700 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
           />
         </label>
+      </Modal>
+
+      <Modal
+        open={entryModalOpen}
+        title={park ? `${park.name} entry` : "Journal entry"}
+        onClose={() => {
+          setEntryModalOpen(false);
+          setSelectedEntry(null);
+        }}
+      >
+        {selectedEntry ? (
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              Visit date: {selectedEntry.visit_date}
+            </p>
+            {selectedEntry.image_url ? (
+              <div className="flex justify-center rounded-2xl bg-[var(--surface-alt)] p-2">
+                <img
+                  src={selectedEntry.image_url}
+                  alt="Journal entry"
+                  className="max-h-[60vh] w-auto max-w-full rounded-xl object-contain"
+                />
+              </div>
+            ) : (
+              <div className="flex h-40 items-center justify-center rounded-2xl bg-[var(--surface-alt)] text-xs font-semibold text-slate-500">
+                No image attached
+              </div>
+            )}
+            {selectedEntry.notes ? (
+              <p className="text-sm text-slate-600">{selectedEntry.notes}</p>
+            ) : (
+              <p className="text-sm text-slate-400">No notes recorded.</p>
+            )}
+          </div>
+        ) : null}
       </Modal>
     </div>
   );
