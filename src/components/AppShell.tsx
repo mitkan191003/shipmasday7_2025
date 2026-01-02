@@ -27,12 +27,43 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [demoReadOnlyOpen, setDemoReadOnlyOpen] = useState(false);
   const [mapFilter, setMapFilter] = useState<"all" | "visited" | "unvisited">("all");
 
+  const setDemoModeEnabled = (enabled: boolean) => {
+    setDemoMode(enabled);
+    if (typeof window !== "undefined") {
+      if (enabled) {
+        window.sessionStorage.setItem("demo-mode", "true");
+      } else {
+        window.sessionStorage.removeItem("demo-mode");
+      }
+    }
+  };
+
+  const attachSignedUrls = async (entryData: JournalEntry[]) => {
+    const signedEntries = await Promise.all(
+      entryData.map(async (entry) => {
+        if (!entry.image_path) {
+          return entry;
+        }
+        const { data, error } = await supabase
+          .storage
+          .from("journal-images")
+          .createSignedUrl(entry.image_path, 60 * 60);
+        if (error || !data?.signedUrl) {
+          return entry;
+        }
+        return { ...entry, image_url: data.signedUrl };
+      }),
+    );
+    return signedEntries;
+  };
+
   useEffect(() => {
     const loadSession = async () => {
       const { data } = await supabase.auth.getSession();
       const session = data.session;
       setUserId(session?.user.id ?? null);
       setUserEmail(session?.user.email ?? null);
+      setDemoModeEnabled(Boolean(session?.user.is_anonymous));
       setSessionReady(true);
     };
 
@@ -41,6 +72,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user.id ?? null);
       setUserEmail(session?.user.email ?? null);
+      setDemoModeEnabled(Boolean(session?.user.is_anonymous));
     });
 
     return () => {
@@ -57,14 +89,6 @@ export default function AppShell({ parks }: { parks: Park[] }) {
       /Mobi|Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent);
     if (isMobile) {
       setMobileWarningOpen(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const stored = window.sessionStorage.getItem("demo-mode");
-    if (stored === "true") {
-      setDemoMode(true);
     }
   }, []);
 
@@ -105,7 +129,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           .order("visit_date", { ascending: false }),
       ]);
       setVisits(visitData ?? []);
-      setEntries(entryData ?? []);
+      const signedEntries = await attachSignedUrls(entryData ?? []);
+      setEntries(signedEntries);
     };
 
     loadUserData();
@@ -126,17 +151,6 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const stateIndex = useMemo(() => buildStateIndex(parks), [parks]);
   const stateList = useMemo(() => Array.from(stateIndex.keys()).sort(), [stateIndex]);
   const selectedStateParks = selectedState ? stateIndex.get(selectedState) ?? [] : [];
-
-  const setDemoModeEnabled = (enabled: boolean) => {
-    setDemoMode(enabled);
-    if (typeof window !== "undefined") {
-      if (enabled) {
-        window.sessionStorage.setItem("demo-mode", "true");
-      } else {
-        window.sessionStorage.removeItem("demo-mode");
-      }
-    }
-  };
 
   const handleSelectPark = (park: Park) => {
     if (visitedIds.has(park.id)) {
@@ -205,11 +219,13 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         throw uploadError;
       }
 
-      const { data: publicUrlData } = supabase
+      const { data: signedData, error: signedError } = await supabase
         .storage
         .from("journal-images")
-        .getPublicUrl(imagePath);
-      imageUrl = publicUrlData.publicUrl;
+        .createSignedUrl(imagePath, 60 * 60);
+      if (!signedError) {
+        imageUrl = signedData?.signedUrl ?? null;
+      }
     }
 
     const { data, error } = await supabase
@@ -219,7 +235,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         park_id: payload.parkId,
         visit_date: payload.visitDate,
         notes: payload.notes,
-        image_url: imageUrl,
+        image_url: null,
         image_path: imagePath,
       })
       .select("id, park_id, visit_date, notes, image_url, image_path, created_at")
@@ -230,7 +246,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
     }
 
     if (data) {
-      setEntries((current) => [data, ...current]);
+      const nextEntry = imageUrl ? { ...data, image_url: imageUrl } : data;
+      setEntries((current) => [nextEntry, ...current]);
     }
   };
 
