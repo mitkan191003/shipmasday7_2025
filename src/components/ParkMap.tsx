@@ -84,12 +84,12 @@ function MapPanel({
       }`}
     >
       {title ? (
-        <div className="absolute left-5 top-4 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="absolute left-5 top-4 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {title}
         </div>
       ) : null}
       {subtitle ? (
-        <div className="absolute right-5 top-4 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="absolute right-5 top-4 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {subtitle}
         </div>
       ) : null}
@@ -102,9 +102,9 @@ function MapPanel({
       >
         <defs>
           <radialGradient id="parkGradient" cx="30%" cy="30%" r="70%">
-            <stop offset="0%" stopColor="#fde68a" />
-            <stop offset="55%" stopColor="#fecdd3" />
-            <stop offset="100%" stopColor="#bae6fd" />
+            <stop offset="0%" stopColor="var(--map-marker-start)" />
+            <stop offset="55%" stopColor="var(--map-marker-mid)" />
+            <stop offset="100%" stopColor="var(--map-marker-end)" />
           </radialGradient>
         </defs>
         <Geographies geography={mapUrl}>
@@ -126,18 +126,18 @@ function MapPanel({
                     className="outline-none"
                     style={{
                       default: {
-                        fill: isActive ? "#fcd34d" : "#e2e8f0",
-                        stroke: "#cbd5f5",
+                        fill: isActive ? "var(--map-land-active)" : "var(--map-land)",
+                        stroke: "var(--map-stroke)",
                         strokeWidth: 0.6,
                       },
                       hover: {
-                        fill: "#fde68a",
-                        stroke: "#cbd5f5",
+                        fill: "var(--map-land-hover)",
+                        stroke: "var(--map-stroke)",
                         strokeWidth: 0.6,
                       },
                       pressed: {
-                        fill: "#fbbf24",
-                        stroke: "#cbd5f5",
+                        fill: "var(--map-land-active)",
+                        stroke: "var(--map-stroke)",
                         strokeWidth: 0.6,
                       },
                     }}
@@ -157,7 +157,7 @@ function MapPanel({
                 onMouseLeave={() => setHovered(null)}
                 style={{ cursor: "pointer" }}
               >
-                <circle r={16} fill={isVisited ? "#e2e8f0" : "url(#parkGradient)"} />
+                <circle r={16} fill={isVisited ? "var(--map-marker-visited)" : "url(#parkGradient)"} />
                 <image
                   href="/icons/park-marker.svg"
                   x={-10}
@@ -169,7 +169,16 @@ function MapPanel({
                     filter: isVisited ? "grayscale(1)" : "none",
                   }}
                 />
-                {isVisited ? <image href="/icons/checkmark.svg" x={6} y={-16} width={12} height={12} /> : null}
+                {isVisited ? (
+                  <image
+                    href="/icons/checkmark.svg"
+                    x={6}
+                    y={-16}
+                    width={12}
+                    height={12}
+                    style={{ filter: "var(--checkmark-filter)" }}
+                  />
+                ) : null}
               </g>
             </Marker>
           );
@@ -189,11 +198,11 @@ function MapPanel({
                   className="h-24 w-full rounded-2xl object-cover"
                 />
               ) : (
-                <div className="h-24 w-full rounded-2xl bg-[radial-gradient(circle_at_top,_#fbe9d1,_#e9eef5_55%,_#dde7f1)]" />
+                <div className="h-24 w-full rounded-2xl park-card-gradient" />
               )}
               <div className="mt-3">
-                <p className="text-sm font-semibold text-slate-800">{hovered.park.name}</p>
-                <p className="text-xs text-slate-500">{hovered.park.states.join(" / ")}</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{hovered.park.name}</p>
+                <p className="text-xs text-[var(--text-muted)]">{hovered.park.states.join(" / ")}</p>
               </div>
             </div>,
             document.body,

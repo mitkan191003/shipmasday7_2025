@@ -26,6 +26,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [demoMode, setDemoMode] = useState(false);
   const [demoReadOnlyOpen, setDemoReadOnlyOpen] = useState(false);
   const [mapFilter, setMapFilter] = useState<"all" | "visited" | "unvisited">("all");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const entriesRef = useRef<JournalEntry[]>([]);
   const signedUrlExpirationsRef = useRef<Map<string, number>>(new Map());
   const signedUrlRefreshingRef = useRef<Set<string>>(new Set());
@@ -43,6 +44,25 @@ export default function AppShell({ parks }: { parks: Park[] }) {
       }
     }
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem("theme");
+    const preferred =
+      stored === "light" || stored === "dark"
+        ? stored
+        : window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+    setTheme(preferred);
+    document.documentElement.setAttribute("data-theme", preferred);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem("theme", theme);
+  }, [theme]);
 
   const attachSignedUrls = async (entryData: JournalEntry[]) => {
     const signedEntries = await Promise.all(
@@ -371,7 +391,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
             }
           }}
         >
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-[var(--text-body)]">
             This experience is not optimized for mobile yet. For the best map and journaling flow, please use a desktop
             or larger screen.
           </p>
@@ -383,7 +403,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                 window.sessionStorage.setItem("mobile-warning-dismissed", "true");
               }
             }}
-            className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+            className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
           >
             Got it
           </button>
@@ -393,30 +413,46 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#f7f1e8,_#e7eef5_45%,_#dde6f1)] px-6 pb-12 text-slate-800">
+    <div className="min-h-screen page-gradient px-6 pb-12 text-[var(--text-primary)]">
       <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 py-8">
         <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Trailkeeper</p>
-          <h1 className="mt-2 text-3xl font-semibold text-slate-800">National Park Journal</h1>
-          <p className="mt-2 text-sm text-slate-500">
+          <p className="text-xs uppercase tracking-[0.4em] text-[var(--text-muted)]">Trailkeeper</p>
+          <h1 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">National Park Journal</h1>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
             Track visits, celebrate firsts, and keep the memories flowing.
           </p>
         </div>
-        <div className="rounded-[28px] bg-[var(--surface)] px-4 py-3 shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]">
-          <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
-            {demoMode ? "Demo session" : "Signed in"}
-          </p>
-          <p className="text-sm font-semibold text-slate-700">{demoMode ? "Read-only demo" : userEmail}</p>
+        <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              setDemoModeEnabled(false);
-            }}
-            className="mt-2 rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-pressed={theme === "dark"}
+            className="rounded-full bg-[var(--surface)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[10px_10px_22px_var(--shadow-dark),-10px_-10px_22px_var(--shadow-light)]"
           >
-            Sign out
+            {theme === "dark" ? "Light mode" : "Dark mode"}
           </button>
+          <div className="rounded-[28px] bg-[var(--surface)] px-4 py-3 shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]">
+            <div className="flex items-center gap-4">
+              <div>
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                  {demoMode ? "Demo session" : "Signed in"}
+                </p>
+                <p className="text-sm font-semibold text-[var(--text-strong)]">
+                  {demoMode ? "Read-only demo" : userEmail}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  setDemoModeEnabled(false);
+                }}
+                className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+              >
+                Sign out
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -425,27 +461,27 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Explore</p>
-                <h2 className="mt-2 text-2xl font-semibold text-slate-800">Park map</h2>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Explore</p>
+                <h2 className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">Park map</h2>
+                <p className="mt-2 text-sm text-[var(--text-muted)]">
                   Hover for park snapshots, click a marker to visit, or tap a state label to browse its list.
                 </p>
               </div>
               <div className="flex w-full items-stretch gap-3 sm:w-auto sm:flex-1 sm:justify-end">
-                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[28px] bg-white/70 px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[28px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
                   <span>{visitedCount} parks visited</span>
-                  <span className="text-slate-500">{unvisitedCount} parks unvisited</span>
+                  <span className="text-[var(--text-muted)]">{unvisitedCount} parks unvisited</span>
                 </div>
-                <div className="rounded-[28px] bg-white/70 px-3 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Filters</p>
+                <div className="rounded-[28px] bg-[var(--surface-soft)] px-3 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Filters</p>
                   <div className="mt-2 flex gap-2">
                     <button
                       type="button"
                       onClick={() => setMapFilter("visited")}
                       className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "visited"
-                          ? "bg-amber-300 text-slate-900"
-                          : "bg-white/80 text-slate-600"
+                          ? "bg-amber-300 text-[var(--text-on-accent)]"
+                          : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
                       } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
                     >
                       Visited parks
@@ -455,8 +491,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                       onClick={() => setMapFilter("unvisited")}
                       className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "unvisited"
-                          ? "bg-amber-300 text-slate-900"
-                          : "bg-white/80 text-slate-600"
+                          ? "bg-amber-300 text-[var(--text-on-accent)]"
+                          : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
                       } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
                     >
                       Unvisited parks
@@ -466,8 +502,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                       onClick={() => setMapFilter("all")}
                       className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "all"
-                          ? "bg-amber-300 text-slate-900"
-                          : "bg-white/80 text-slate-600"
+                          ? "bg-amber-300 text-[var(--text-on-accent)]"
+                          : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
                       } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
                     >
                       All parks
@@ -491,14 +527,14 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">States</p>
-                <h3 className="mt-2 text-xl font-semibold text-slate-800">Browse by state</h3>
+                <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">States</p>
+                <h3 className="mt-2 text-xl font-semibold text-[var(--text-primary)]">Browse by state</h3>
               </div>
               {selectedState ? (
                 <button
                   type="button"
                   onClick={() => setSelectedState(null)}
-                  className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                  className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
                 >
                   Clear selection
                 </button>
@@ -512,8 +548,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   onClick={() => setSelectedState(state)}
                   className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
                     selectedState === state
-                      ? "bg-amber-300 text-slate-900"
-                      : "bg-white/70 text-slate-600"
+                      ? "bg-amber-300 text-[var(--text-on-accent)]"
+                      : "bg-[var(--surface-soft)] text-[var(--text-body)]"
                   } shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]`}
                 >
                   {state}
@@ -522,7 +558,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
             </div>
             {selectedState ? (
               <div className="mt-6 rounded-3xl bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
-                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
                   {selectedState} parks
                 </h4>
                 <div className="mt-3 grid gap-2">
@@ -531,10 +567,10 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                       key={park.id}
                       type="button"
                       onClick={() => handleSelectPark(park)}
-                      className="flex items-center justify-between rounded-2xl bg-white/70 px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+                      className="flex items-center justify-between rounded-2xl bg-[var(--surface-soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--text-strong)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
                     >
                       <span>{park.name}</span>
-                      <span className="text-xs text-slate-400">{park.city}</span>
+                      <span className="text-xs text-[var(--text-subtle)]">{park.city}</span>
                     </button>
                   ))}
                 </div>
@@ -562,15 +598,15 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           setPendingPark(null);
         }}
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-[var(--text-body)]">
           Mark this park as visited to unlock its journal timeline.
         </p>
-        {statusMessage ? <p className="mt-3 text-sm text-amber-700">{statusMessage}</p> : null}
+        {statusMessage ? <p className="mt-3 text-sm text-[var(--status-warning)]">{statusMessage}</p> : null}
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             type="button"
             onClick={handleConfirmVisit}
-            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
           >
             Yes, I visited
           </button>
@@ -580,7 +616,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
               setConfirmVisitOpen(false);
               setPendingPark(null);
             }}
-            className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+            className="rounded-full bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
           >
             Not yet
           </button>
@@ -588,13 +624,13 @@ export default function AppShell({ parks }: { parks: Park[] }) {
       </Modal>
 
       <Modal open={congratsOpen} title="Congratulations!" onClose={() => setCongratsOpen(false)}>
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-[var(--text-body)]">
           New park unlocked. Add your first journal entry while the memory is fresh.
         </p>
         <button
           type="button"
           onClick={() => setCongratsOpen(false)}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
         >
           Start journaling
         </button>
@@ -605,13 +641,13 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         title="Demo is read-only"
         onClose={() => setDemoReadOnlyOpen(false)}
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-[var(--text-body)]">
           This demo profile is locked. Create an account to add visits or journal entries.
         </p>
         <button
           type="button"
           onClick={() => setDemoReadOnlyOpen(false)}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
         >
           Got it
         </button>
@@ -627,7 +663,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           }
         }}
       >
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-[var(--text-body)]">
           This experience is not optimized for mobile yet. For the best map and journaling flow, please use a desktop
           or larger screen.
         </p>
@@ -639,7 +675,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
               window.sessionStorage.setItem("mobile-warning-dismissed", "true");
             }
           }}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-900 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
         >
           Got it
         </button>

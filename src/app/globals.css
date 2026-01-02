@@ -5,8 +5,62 @@
   --foreground: #1f2937;
   --surface: #eaf0f6;
   --surface-alt: #f6f9fc;
+  --surface-soft: rgba(255, 255, 255, 0.7);
+  --surface-soft-strong: rgba(255, 255, 255, 0.85);
+  --surface-soft-press: rgba(226, 232, 240, 0.75);
   --shadow-dark: rgba(129, 140, 155, 0.35);
   --shadow-light: rgba(255, 255, 255, 0.9);
+  --text-primary: #1f2937;
+  --text-strong: #334155;
+  --text-body: #475569;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --text-on-accent: #1f2937;
+  --page-gradient: radial-gradient(circle at top, #f7f1e8, #e7eef5 45%, #dde6f1);
+  --modal-overlay: rgba(15, 23, 42, 0.4);
+  --map-land: #e2e8f0;
+  --map-land-active: #fcd34d;
+  --map-land-hover: #fde68a;
+  --map-stroke: #cbd5f5;
+  --map-marker-visited: #cbd5e1;
+  --map-marker-start: #fde68a;
+  --map-marker-mid: #fecdd3;
+  --map-marker-end: #bae6fd;
+  --park-card-gradient: radial-gradient(circle at top, #fbe9d1, #e9eef5 55%, #dde7f1);
+  --status-warning: #b45309;
+  --checkmark-filter: none;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0f172a;
+  --foreground: #e2e8f0;
+  --surface: #182231;
+  --surface-alt: #1f2a3d;
+  --surface-soft: rgba(255, 255, 255, 0.08);
+  --surface-soft-strong: rgba(255, 255, 255, 0.14);
+  --surface-soft-press: rgba(15, 23, 42, 0.7);
+  --shadow-dark: rgba(0, 0, 0, 0.65);
+  --shadow-light: rgba(255, 255, 255, 0.06);
+  --text-primary: #e2e8f0;
+  --text-strong: #f1f5f9;
+  --text-body: #cbd5f5;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --text-on-accent: #1f2937;
+  --page-gradient: radial-gradient(circle at top, #1f2a3d, #0f172a 55%, #0b1120);
+  --modal-overlay: rgba(2, 6, 23, 0.72);
+  --map-land: #233047;
+  --map-land-active: #fbbf24;
+  --map-land-hover: #fcd34d;
+  --map-stroke: #334155;
+  --map-marker-visited: #475569;
+  --map-marker-start: #fbd38d;
+  --map-marker-mid: #f7b8c8;
+  --map-marker-end: #7dd3fc;
+  --park-card-gradient: radial-gradient(circle at top, #2b3a55, #1a2433 55%, #111827);
+  --status-warning: #f59e0b;
+  --checkmark-filter: brightness(0) invert(1);
 }
 
 @theme inline {
@@ -24,6 +78,14 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-body), "Segoe UI", sans-serif;
+}
+
+.page-gradient {
+  background: var(--page-gradient);
+}
+
+.park-card-gradient {
+  background: var(--park-card-gradient);
 }
 
 h1,
