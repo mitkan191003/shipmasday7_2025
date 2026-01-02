@@ -15,26 +15,37 @@ type JournalPanelProps = {
     notes: string;
     imageFile: File | null;
   }) => Promise<void>;
+  onRefreshEntryImage?: (entryId: string) => void;
 };
 
 const imageQuotes = [
   "You only get to add one pic so make sure it's the one with your eyes open!",
 ];
 
-export default function JournalPanel({ park, entries, visited, onCreateEntry }: JournalPanelProps) {
+export default function JournalPanel({
+  park,
+  entries,
+  visited,
+  onCreateEntry,
+  onRefreshEntryImage,
+}: JournalPanelProps) {
   const [visitDate, setVisitDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [notes, setNotes] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [entryModalOpen, setEntryModalOpen] = useState(false);
-  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   const sortedEntries = useMemo(() => {
     return [...entries].sort((a, b) => b.visit_date.localeCompare(a.visit_date));
   }, [entries]);
+  const selectedEntry = useMemo(
+    () => entries.find((entry) => entry.id === selectedEntryId) ?? null,
+    [entries, selectedEntryId],
+  );
 
   useEffect(() => {
     if (!imageFile) {
@@ -170,7 +181,7 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
                 key={entry.id}
                 type="button"
                 onClick={() => {
-                  setSelectedEntry(entry);
+                  setSelectedEntryId(entry.id);
                   setEntryModalOpen(true);
                 }}
                 className="relative w-full rounded-3xl bg-[var(--surface-alt)] p-4 text-left shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)] transition hover:-translate-y-0.5"
@@ -184,6 +195,7 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
                   <img
                     src={entry.image_url}
                     alt="Journal entry"
+                    onError={() => onRefreshEntryImage?.(entry.id)}
                     className="mt-3 h-32 w-full rounded-2xl object-cover"
                   />
                 ) : null}
@@ -224,7 +236,7 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
         title={park ? `${park.name} entry` : "Journal entry"}
         onClose={() => {
           setEntryModalOpen(false);
-          setSelectedEntry(null);
+          setSelectedEntryId(null);
         }}
       >
         {selectedEntry ? (
@@ -237,6 +249,7 @@ export default function JournalPanel({ park, entries, visited, onCreateEntry }: 
                 <img
                   src={selectedEntry.image_url}
                   alt="Journal entry"
+                  onError={() => onRefreshEntryImage?.(selectedEntry.id)}
                   className="max-h-[60vh] w-auto max-w-full rounded-xl object-contain"
                 />
               </div>

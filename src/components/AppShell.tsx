@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { JournalEntry, Park, ParkVisit } from "@/lib/parkTypes";
 import { buildStateIndex } from "@/lib/parkUtils";
 import { parkImages } from "@/data/parkImages";
@@ -26,6 +26,12 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   const [demoMode, setDemoMode] = useState(false);
   const [demoReadOnlyOpen, setDemoReadOnlyOpen] = useState(false);
   const [mapFilter, setMapFilter] = useState<"all" | "visited" | "unvisited">("all");
+  const entriesRef = useRef<JournalEntry[]>([]);
+  const signedUrlExpirationsRef = useRef<Map<string, number>>(new Map());
+  const signedUrlRefreshingRef = useRef<Set<string>>(new Set());
+  const signedUrlTtlSeconds = 60 * 60 * 24;
+  const signedUrlRefreshBufferSeconds = 10 * 60;
+  const signedUrlRefreshIntervalMs = 15 * 60 * 1000;
 
   const setDemoModeEnabled = (enabled: boolean) => {
     setDemoMode(enabled);
@@ -47,14 +53,85 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         const { data, error } = await supabase
           .storage
           .from("journal-images")
-          .createSignedUrl(entry.image_path, 60 * 60);
+          .createSignedUrl(entry.image_path, signedUrlTtlSeconds);
         if (error || !data?.signedUrl) {
           return entry;
         }
+        signedUrlExpirationsRef.current.set(
+          entry.image_path,
+          Date.now() + signedUrlTtlSeconds * 1000,
+        );
         return { ...entry, image_url: data.signedUrl };
       }),
     );
     return signedEntries;
+  };
+
+  const refreshSignedUrlsForEntries = async (entriesToRefresh: JournalEntry[]) => {
+    if (!entriesToRefresh.length) {
+      return;
+    }
+    const refreshed = await Promise.all(
+      entriesToRefresh.map(async (entry) => {
+        if (!entry.image_path) {
+          return null;
+        }
+        const { data, error } = await supabase
+          .storage
+          .from("journal-images")
+          .createSignedUrl(entry.image_path, signedUrlTtlSeconds);
+        if (error || !data?.signedUrl) {
+          return null;
+        }
+        signedUrlExpirationsRef.current.set(
+          entry.image_path,
+          Date.now() + signedUrlTtlSeconds * 1000,
+        );
+        return { id: entry.id, imageUrl: data.signedUrl };
+      }),
+    );
+    const updates = new Map<string, string>();
+    refreshed.forEach((result) => {
+      if (result) {
+        updates.set(result.id, result.imageUrl);
+      }
+    });
+    if (!updates.size) {
+      return;
+    }
+    setEntries((current) =>
+      current.map((entry) =>
+        updates.has(entry.id) ? { ...entry, image_url: updates.get(entry.id) ?? entry.image_url } : entry,
+      ),
+    );
+  };
+
+  const refreshExpiringSignedUrls = async () => {
+    const now = Date.now();
+    const entriesToRefresh = entriesRef.current.filter((entry) => {
+      if (!entry.image_path) {
+        return false;
+      }
+      const expiresAt = signedUrlExpirationsRef.current.get(entry.image_path) ?? 0;
+      return expiresAt - now <= signedUrlRefreshBufferSeconds * 1000;
+    });
+    await refreshSignedUrlsForEntries(entriesToRefresh);
+  };
+
+  const refreshEntrySignedUrl = async (entryId: string) => {
+    if (signedUrlRefreshingRef.current.has(entryId)) {
+      return;
+    }
+    const entry = entriesRef.current.find((item) => item.id === entryId);
+    if (!entry?.image_path) {
+      return;
+    }
+    signedUrlRefreshingRef.current.add(entryId);
+    try {
+      await refreshSignedUrlsForEntries([entry]);
+    } finally {
+      signedUrlRefreshingRef.current.delete(entryId);
+    }
   };
 
   useEffect(() => {
@@ -79,6 +156,10 @@ export default function AppShell({ parks }: { parks: Park[] }) {
       data.subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    entriesRef.current = entries;
+  }, [entries]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -135,6 +216,19 @@ export default function AppShell({ parks }: { parks: Park[] }) {
 
     loadUserData();
   }, [userId, demoMode]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!entries.some((entry) => entry.image_path)) {
+      return;
+    }
+    const refreshInterval = window.setInterval(() => {
+      void refreshExpiringSignedUrls();
+    }, signedUrlRefreshIntervalMs);
+    return () => {
+      window.clearInterval(refreshInterval);
+    };
+  }, [entries, signedUrlRefreshIntervalMs]);
 
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.park_id)), [visits]);
   const parksForMap = useMemo(() => {
@@ -222,9 +316,15 @@ export default function AppShell({ parks }: { parks: Park[] }) {
       const { data: signedData, error: signedError } = await supabase
         .storage
         .from("journal-images")
-        .createSignedUrl(imagePath, 60 * 60);
+        .createSignedUrl(imagePath, signedUrlTtlSeconds);
       if (!signedError) {
         imageUrl = signedData?.signedUrl ?? null;
+        if (imagePath && imageUrl) {
+          signedUrlExpirationsRef.current.set(
+            imagePath,
+            Date.now() + signedUrlTtlSeconds * 1000,
+          );
+        }
       }
     }
 
@@ -446,6 +546,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
             entries={entriesForActive}
             visited={activePark ? visitedIds.has(activePark.id) : false}
             onCreateEntry={handleCreateEntry}
+            onRefreshEntryImage={refreshEntrySignedUrl}
           />
         </aside>
       </main>
