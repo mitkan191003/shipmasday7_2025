@@ -231,6 +231,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }, [entries, signedUrlRefreshIntervalMs]);
 
   const visitedIds = useMemo(() => new Set(visits.map((visit) => visit.park_id)), [visits]);
+  const visitedCount = visitedIds.size;
+  const unvisitedCount = Math.max(parks.length - visitedCount, 0);
   const parksForMap = useMemo(() => {
     if (mapFilter === "visited") {
       return parks.filter((park) => visitedIds.has(park.id));
@@ -429,9 +431,10 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   Hover for park snapshots, click a marker to visit, or tap a state label to browse its list.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="rounded-full bg-white/70 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
-                  {visits.length} parks visited
+              <div className="flex w-full items-stretch gap-3 sm:w-auto sm:flex-1 sm:justify-end">
+                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[28px] bg-white/70 px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                  <span>{visitedCount} parks visited</span>
+                  <span className="text-slate-500">{unvisitedCount} parks unvisited</span>
                 </div>
                 <div className="rounded-[28px] bg-white/70 px-3 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">Filters</p>
@@ -445,7 +448,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                           : "bg-white/80 text-slate-600"
                       } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
                     >
-                      Visited park
+                      Visited parks
                     </button>
                     <button
                       type="button"
@@ -456,7 +459,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                           : "bg-white/80 text-slate-600"
                       } shadow-[inset_2px_2px_6px_var(--shadow-dark),inset_-2px_-2px_6px_var(--shadow-light)]`}
                     >
-                      Unvisited park
+                      Unvisited parks
                     </button>
                     <button
                       type="button"
