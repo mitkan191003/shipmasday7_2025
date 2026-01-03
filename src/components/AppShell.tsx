@@ -414,7 +414,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
 
   return (
     <div className="min-h-screen px-6 pb-12 text-[var(--text-primary)]">
-      <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 py-8">
+      <header className="mx-auto flex w-full max-w-[92vw] flex-wrap items-center justify-between gap-4 py-8">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-[var(--text-muted)]">Trailkeeper</p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">National Park Journal</h1>
@@ -456,8 +456,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,_1.2fr)_minmax(0,_0.8fr)]">
-        <section className="space-y-6">
+      <main className="mx-auto grid w-full max-w-[92vw] gap-6 lg:grid-cols-[minmax(16rem,_0.8fr)_minmax(0,_1.4fr)_minmax(0,_1fr)]">
+        <section className="order-1 lg:order-2 lg:col-start-2">
           <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -523,7 +523,9 @@ export default function AppShell({ parks }: { parks: Park[] }) {
               />
             </div>
           </div>
+        </section>
 
+        <section className="order-2 lg:order-1 lg:col-start-1">
           <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
@@ -579,7 +581,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           </div>
         </section>
 
-        <aside className="space-y-6">
+        <aside className="order-3 lg:col-start-3">
           <JournalPanel
             park={activePark}
             entries={entriesForActive}
