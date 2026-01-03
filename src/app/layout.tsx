@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,11 @@ const bodyFont = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Trailkeeper - National Park Journal",
   description: "Track US national parks, celebrate first visits, and keep journal entries with images.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

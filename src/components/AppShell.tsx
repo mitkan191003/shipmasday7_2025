@@ -413,8 +413,8 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }
 
   return (
-    <div className="min-h-screen px-6 pb-12 text-[var(--text-primary)]">
-      <header className="mx-auto flex w-full max-w-[92vw] flex-wrap items-center justify-between gap-4 py-8">
+    <div className="min-h-screen px-4 pb-12 text-[var(--text-primary)] sm:px-6">
+      <header className="mx-auto flex w-full max-w-full flex-wrap items-center justify-between gap-4 py-8 sm:max-w-[92vw]">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-[var(--text-muted)]">Trailkeeper</p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">National Park Journal</h1>
@@ -456,7 +456,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         </div>
       </header>
 
-      <main className="mx-auto grid w-full max-w-[92vw] gap-6 lg:grid-cols-[minmax(16rem,_0.8fr)_minmax(0,_1.4fr)_minmax(0,_1fr)]">
+      <main className="mx-auto grid w-full max-w-full gap-6 lg:grid-cols-[minmax(16rem,_0.8fr)_minmax(0,_1.4fr)_minmax(0,_1fr)] sm:max-w-[92vw]">
         <section className="order-1 lg:order-2 lg:col-start-2">
           <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
@@ -467,12 +467,20 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   Hover for park snapshots, click a marker to visit, or tap a state label to browse its list.
                 </p>
               </div>
-              <div className="flex w-full items-stretch gap-3 sm:w-auto sm:flex-1 sm:justify-end">
-                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]">
+              <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-1 sm:flex-row sm:items-stretch sm:justify-end">
+                <div className="grid w-full grid-cols-2 gap-3 sm:hidden">
+                  <div className="flex items-center justify-center rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]">
+                    {visitedCount} visited
+                  </div>
+                  <div className="flex items-center justify-center rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]">
+                    {unvisitedCount} unvisited
+                  </div>
+                </div>
+                <div className="hidden min-w-0 flex-1 flex-col items-center justify-center rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)] sm:flex">
                   <span>{visitedCount} parks visited</span>
                   <span className="text-[var(--text-muted)]">{unvisitedCount} parks unvisited</span>
                 </div>
-                <div className="rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 shadow-[var(--shadow-elevation)]">
+                <div className="w-full rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 shadow-[var(--shadow-elevation)] sm:w-auto">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Filters</p>
                   <div className="mt-2 flex gap-2">
                     <button
