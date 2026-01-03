@@ -90,7 +90,7 @@ export default function JournalPanel({
 
   if (!park) {
     return (
-      <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-[32px] bg-[var(--surface)] p-8 text-center shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+      <div className="flex h-full min-h-[420px] flex-col items-center justify-center rounded-[20px] bg-[var(--surface)] p-8 text-center shadow-[var(--shadow-elevation)]">
         <Image src="/icons/mountain.svg" alt="Mountain" width={48} height={48} />
         <h2 className="mt-4 text-2xl font-semibold text-[var(--text-strong)]">Pick a park to start journaling</h2>
         <p className="mt-2 text-sm text-[var(--text-muted)]">
@@ -101,7 +101,7 @@ export default function JournalPanel({
   }
 
   return (
-    <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+    <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Journal</p>
@@ -110,14 +110,14 @@ export default function JournalPanel({
             {park.states.join(" / ")} - {park.city}
           </p>
         </div>
-        <div className="rounded-full bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+        <div className="rounded-[20px] bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]">
           {visited ? "Visited" : "Unvisited"}
         </div>
       </div>
 
       <div className="mt-6 border-l-2 border-dashed border-[var(--surface-soft-press)] pl-6">
-        <div className="relative mb-6 rounded-3xl bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
-          <div className="absolute -left-[29px] top-6 h-4 w-4 rounded-full bg-amber-300 shadow-[4px_4px_10px_var(--shadow-dark),-4px_-4px_10px_var(--shadow-light)]" />
+        <div className="relative mb-6 rounded-[20px] bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
+          <div className="absolute -left-[29px] top-6 h-4 w-4 rounded-[20px] bg-amber-300 shadow-[4px_4px_10px_var(--shadow-dark),-4px_-4px_10px_var(--shadow-light)]" />
           <h3 className="text-sm font-semibold text-[var(--text-strong)]">New visit entry</h3>
           <form onSubmit={handleSubmit} className="mt-4 space-y-3">
             <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
@@ -127,7 +127,7 @@ export default function JournalPanel({
                 value={visitDate}
                 onChange={(event) => setVisitDate(event.target.value)}
                 required
-                className="mt-2 w-full rounded-2xl border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                className="mt-2 w-full rounded-[20px] border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
               />
             </label>
             <label className="block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
@@ -137,14 +137,14 @@ export default function JournalPanel({
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="What did you see, smell, or feel?"
-                className="mt-2 w-full rounded-2xl border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                className="mt-2 w-full rounded-[20px] border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
               />
             </label>
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={() => setImageModalOpen(true)}
-                className="rounded-full bg-[var(--surface-soft-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+                className="rounded-[20px] bg-[var(--surface-soft-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]"
               >
                 {imageFile ? "Replace image" : "Add one image"}
               </button>
@@ -158,14 +158,14 @@ export default function JournalPanel({
               <img
                 src={imagePreview}
                 alt="Selected preview"
-                className="h-32 w-full rounded-2xl object-cover"
+                className="h-32 w-full rounded-[20px] object-cover"
               />
             ) : null}
             {message ? <p className="text-xs text-[var(--status-warning)]">{message}</p> : null}
             <button
               type="submit"
               disabled={saving}
-              className="w-full rounded-2xl bg-amber-300 px-4 py-3 text-sm font-semibold text-[var(--text-on-accent)] shadow-[8px_8px_18px_var(--shadow-dark),-8px_-8px_18px_var(--shadow-light)] transition hover:brightness-95 disabled:opacity-60"
+              className="w-full rounded-[20px] bg-amber-300 px-4 py-3 text-sm font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)] transition hover:brightness-95 disabled:opacity-60"
             >
               {saving ? "Saving entry..." : "Add to timeline"}
             </button>
@@ -184,9 +184,9 @@ export default function JournalPanel({
                   setSelectedEntryId(entry.id);
                   setEntryModalOpen(true);
                 }}
-                className="relative w-full rounded-3xl bg-[var(--surface-alt)] p-4 text-left shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)] transition hover:-translate-y-0.5"
+                className="relative w-full rounded-[20px] bg-[var(--surface-alt)] p-4 text-left shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)] transition hover:-translate-y-0.5"
               >
-                <div className="absolute -left-[29px] top-6 h-4 w-4 rounded-full bg-[var(--surface-soft-press)] shadow-[4px_4px_10px_var(--shadow-dark),-4px_-4px_10px_var(--shadow-light)]" />
+                <div className="absolute -left-[29px] top-6 h-4 w-4 rounded-[20px] bg-[var(--surface-soft-press)] shadow-[4px_4px_10px_var(--shadow-dark),-4px_-4px_10px_var(--shadow-light)]" />
                 <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
                   <span>{entry.visit_date}</span>
                   <span>Journal</span>
@@ -196,7 +196,7 @@ export default function JournalPanel({
                     src={entry.image_url}
                     alt="Journal entry"
                     onError={() => onRefreshEntryImage?.(entry.id)}
-                    className="mt-3 h-32 w-full rounded-2xl object-cover"
+                    className="mt-3 h-32 w-full rounded-[20px] object-cover"
                   />
                 ) : null}
                 {entry.notes ? <p className="mt-3 text-sm text-[var(--text-body)]">{entry.notes}</p> : null}
@@ -209,7 +209,7 @@ export default function JournalPanel({
       <Modal open={imageModalOpen} title="Pick your single photo" onClose={() => setImageModalOpen(false)}>
         <ul className="space-y-2 text-sm text-[var(--text-body)]">
           {imageQuotes.map((quote) => (
-            <li key={quote} className="rounded-2xl bg-[var(--surface-soft)] px-4 py-2 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]">
+            <li key={quote} className="rounded-[20px] bg-[var(--surface-soft)] px-4 py-2 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]">
               {quote}
             </li>
           ))}
@@ -226,7 +226,7 @@ export default function JournalPanel({
                 setImageModalOpen(false);
               }
             }}
-            className="mt-2 w-full rounded-2xl border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+            className="mt-2 w-full rounded-[20px] border border-transparent bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
           />
         </label>
       </Modal>
@@ -245,7 +245,7 @@ export default function JournalPanel({
               Visit date: {selectedEntry.visit_date}
             </p>
             {selectedEntry.image_url ? (
-              <div className="flex justify-center rounded-2xl bg-[var(--surface-alt)] p-2">
+              <div className="flex justify-center rounded-[20px] bg-[var(--surface-alt)] p-2">
                 <img
                   src={selectedEntry.image_url}
                   alt="Journal entry"
@@ -254,7 +254,7 @@ export default function JournalPanel({
                 />
               </div>
             ) : (
-              <div className="flex h-40 items-center justify-center rounded-2xl bg-[var(--surface-alt)] text-xs font-semibold text-[var(--text-muted)]">
+              <div className="flex h-40 items-center justify-center rounded-[20px] bg-[var(--surface-alt)] text-xs font-semibold text-[var(--text-muted)]">
                 No image attached
               </div>
             )}

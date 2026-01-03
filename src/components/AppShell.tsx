@@ -403,7 +403,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                 window.sessionStorage.setItem("mobile-warning-dismissed", "true");
               }
             }}
-            className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+            className="mt-4 rounded-[20px] bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)]"
           >
             Got it
           </button>
@@ -413,7 +413,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
   }
 
   return (
-    <div className="min-h-screen page-gradient px-6 pb-12 text-[var(--text-primary)]">
+    <div className="min-h-screen px-6 pb-12 text-[var(--text-primary)]">
       <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 py-8">
         <div>
           <p className="text-xs uppercase tracking-[0.4em] text-[var(--text-muted)]">Trailkeeper</p>
@@ -427,11 +427,11 @@ export default function AppShell({ parks }: { parks: Park[] }) {
             type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             aria-pressed={theme === "dark"}
-            className="rounded-full bg-[var(--surface)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[10px_10px_22px_var(--shadow-dark),-10px_-10px_22px_var(--shadow-light)]"
+            className="rounded-[20px] bg-[var(--surface)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]"
           >
             {theme === "dark" ? "Light mode" : "Dark mode"}
           </button>
-          <div className="rounded-[28px] bg-[var(--surface)] px-4 py-3 shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]">
+          <div className="rounded-[20px] bg-[var(--surface)] px-4 py-3 shadow-[var(--shadow-elevation)]">
             <div className="flex items-center gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">
@@ -447,7 +447,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   await supabase.auth.signOut();
                   setDemoModeEnabled(false);
                 }}
-                className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                className="rounded-[20px] bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
               >
                 Sign out
               </button>
@@ -458,7 +458,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
 
       <main className="mx-auto grid w-full max-w-6xl gap-6 lg:grid-cols-[minmax(0,_1.2fr)_minmax(0,_0.8fr)]">
         <section className="space-y-6">
-          <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+          <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">Explore</p>
@@ -468,17 +468,17 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                 </p>
               </div>
               <div className="flex w-full items-stretch gap-3 sm:w-auto sm:flex-1 sm:justify-end">
-                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[28px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                <div className="flex min-w-0 flex-1 flex-col items-center justify-center rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)]">
                   <span>{visitedCount} parks visited</span>
                   <span className="text-[var(--text-muted)]">{unvisitedCount} parks unvisited</span>
                 </div>
-                <div className="rounded-[28px] bg-[var(--surface-soft)] px-3 py-2 shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]">
+                <div className="rounded-[20px] bg-[var(--surface-soft)] px-3 py-2 shadow-[var(--shadow-elevation)]">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Filters</p>
                   <div className="mt-2 flex gap-2">
                     <button
                       type="button"
                       onClick={() => setMapFilter("visited")}
-                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                      className={`rounded-[20px] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "visited"
                           ? "bg-amber-300 text-[var(--text-on-accent)]"
                           : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
@@ -489,7 +489,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                     <button
                       type="button"
                       onClick={() => setMapFilter("unvisited")}
-                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                      className={`rounded-[20px] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "unvisited"
                           ? "bg-amber-300 text-[var(--text-on-accent)]"
                           : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
@@ -500,7 +500,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                     <button
                       type="button"
                       onClick={() => setMapFilter("all")}
-                      className={`rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
+                      className={`rounded-[20px] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] ${
                         mapFilter === "all"
                           ? "bg-amber-300 text-[var(--text-on-accent)]"
                           : "bg-[var(--surface-soft-strong)] text-[var(--text-body)]"
@@ -524,7 +524,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
             </div>
           </div>
 
-          <div className="rounded-[32px] bg-[var(--surface)] p-6 shadow-[18px_18px_38px_var(--shadow-dark),-18px_-18px_38px_var(--shadow-light)]">
+          <div className="rounded-[20px] bg-[var(--surface)] p-6 shadow-[var(--shadow-elevation)]">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.3em] text-[var(--text-muted)]">States</p>
@@ -534,7 +534,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                 <button
                   type="button"
                   onClick={() => setSelectedState(null)}
-                  className="rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+                  className="rounded-[20px] bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
                 >
                   Clear selection
                 </button>
@@ -546,18 +546,18 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                   key={state}
                   type="button"
                   onClick={() => setSelectedState(state)}
-                  className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
+                  className={`rounded-[20px] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition ${
                     selectedState === state
                       ? "bg-amber-300 text-[var(--text-on-accent)]"
                       : "bg-[var(--surface-soft)] text-[var(--text-body)]"
-                  } shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]`}
+                  } shadow-[var(--shadow-elevation)]`}
                 >
                   {state}
                 </button>
               ))}
             </div>
             {selectedState ? (
-              <div className="mt-6 rounded-3xl bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
+              <div className="mt-6 rounded-[20px] bg-[var(--surface-alt)] p-4 shadow-[inset_8px_8px_18px_var(--shadow-dark),inset_-8px_-8px_18px_var(--shadow-light)]">
                 <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
                   {selectedState} parks
                 </h4>
@@ -567,7 +567,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
                       key={park.id}
                       type="button"
                       onClick={() => handleSelectPark(park)}
-                      className="flex items-center justify-between rounded-2xl bg-[var(--surface-soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--text-strong)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+                      className="flex items-center justify-between rounded-[20px] bg-[var(--surface-soft)] px-4 py-3 text-left text-sm font-semibold text-[var(--text-strong)] shadow-[var(--shadow-elevation)]"
                     >
                       <span>{park.name}</span>
                       <span className="text-xs text-[var(--text-subtle)]">{park.city}</span>
@@ -606,7 +606,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
           <button
             type="button"
             onClick={handleConfirmVisit}
-            className="rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+            className="rounded-[20px] bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)]"
           >
             Yes, I visited
           </button>
@@ -616,7 +616,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
               setConfirmVisitOpen(false);
               setPendingPark(null);
             }}
-            className="rounded-full bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
+            className="rounded-[20px] bg-[var(--surface-soft)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]"
           >
             Not yet
           </button>
@@ -630,7 +630,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         <button
           type="button"
           onClick={() => setCongratsOpen(false)}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-[20px] bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)]"
         >
           Start journaling
         </button>
@@ -647,7 +647,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
         <button
           type="button"
           onClick={() => setDemoReadOnlyOpen(false)}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-[20px] bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)]"
         >
           Got it
         </button>
@@ -675,7 +675,7 @@ export default function AppShell({ parks }: { parks: Park[] }) {
               window.sessionStorage.setItem("mobile-warning-dismissed", "true");
             }
           }}
-          className="mt-4 rounded-full bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)]"
+          className="mt-4 rounded-[20px] bg-amber-300 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)]"
         >
           Got it
         </button>

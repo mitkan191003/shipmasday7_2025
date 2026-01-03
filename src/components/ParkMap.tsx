@@ -79,17 +79,17 @@ function MapPanel({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[32px] bg-[var(--surface-alt)] p-4 shadow-[inset_10px_10px_22px_var(--shadow-dark),inset_-10px_-10px_22px_var(--shadow-light)] ${
+      className={`relative overflow-hidden rounded-[20px] bg-[var(--surface-alt)] p-4 shadow-[inset_10px_10px_22px_var(--shadow-dark),inset_-10px_-10px_22px_var(--shadow-light)] ${
         className ?? ""
       }`}
     >
       {title ? (
-        <div className="absolute left-5 top-4 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+        <div className="absolute left-5 top-4 rounded-[20px] bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {title}
         </div>
       ) : null}
       {subtitle ? (
-        <div className="absolute right-5 top-4 rounded-full bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
+        <div className="absolute right-5 top-4 rounded-[20px] bg-[var(--surface-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">
           {subtitle}
         </div>
       ) : null}
@@ -188,17 +188,17 @@ function MapPanel({
       {hovered && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="pointer-events-none fixed z-[9999] w-56 -translate-y-1/2 rounded-3xl bg-[var(--surface)] p-3 text-left shadow-[14px_14px_30px_var(--shadow-dark),-14px_-14px_30px_var(--shadow-light)]"
+              className="pointer-events-none fixed z-[9999] w-56 -translate-y-1/2 rounded-[20px] bg-[var(--surface)] p-3 text-left shadow-[var(--shadow-elevation)]"
               style={{ left: hovered.x + 16, top: hovered.y - 6 }}
             >
               {parkImages[hovered.park.id] ? (
                 <img
                   src={parkImages[hovered.park.id]}
                   alt={hovered.park.name}
-                  className="h-24 w-full rounded-2xl object-cover"
+                  className="h-24 w-full rounded-[20px] object-cover"
                 />
               ) : (
-                <div className="h-24 w-full rounded-2xl park-card-gradient" />
+                <div className="h-24 w-full rounded-[20px] park-card-gradient" />
               )}
               <div className="mt-3">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">{hovered.park.name}</p>

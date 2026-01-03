@@ -86,8 +86,8 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center page-gradient px-6">
-      <div className="w-full max-w-md rounded-[32px] bg-[var(--surface)] p-8 shadow-[20px_20px_45px_var(--shadow-dark),-20px_-20px_45px_var(--shadow-light)]">
+    <div className="flex min-h-screen items-center justify-center px-6">
+      <div className="w-full max-w-md rounded-[20px] bg-[var(--surface)] p-8 shadow-[var(--shadow-elevation)]">
         <div className="mb-6">
           <p className="text-sm uppercase tracking-[0.2em] text-[var(--text-muted)]">Trailkeeper</p>
           <h1 className="mt-2 text-3xl font-semibold text-[var(--text-primary)]">Welcome back</h1>
@@ -102,7 +102,7 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-2 w-full rounded-2xl border border-transparent bg-[var(--surface-alt)] px-4 py-3 text-sm text-[var(--text-strong)] shadow-[inset_6px_6px_12px_var(--shadow-dark),inset_-6px_-6px_12px_var(--shadow-light)] focus:outline-none focus:ring-2 focus:ring-amber-300"
+              className="mt-2 w-full rounded-[20px] border border-transparent bg-[var(--surface-alt)] px-4 py-3 text-sm text-[var(--text-strong)] shadow-[inset_6px_6px_12px_var(--shadow-dark),inset_-6px_-6px_12px_var(--shadow-light)] focus:outline-none focus:ring-2 focus:ring-amber-300"
             />
           </label>
           <label className="block text-sm font-medium text-[var(--text-body)]">
@@ -111,7 +111,7 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-2 w-full rounded-2xl border border-transparent bg-[var(--surface-alt)] px-4 py-3 text-sm text-[var(--text-strong)] shadow-[inset_6px_6px_12px_var(--shadow-dark),inset_-6px_-6px_12px_var(--shadow-light)] focus:outline-none focus:ring-2 focus:ring-amber-300"
+              className="mt-2 w-full rounded-[20px] border border-transparent bg-[var(--surface-alt)] px-4 py-3 text-sm text-[var(--text-strong)] shadow-[inset_6px_6px_12px_var(--shadow-dark),inset_-6px_-6px_12px_var(--shadow-light)] focus:outline-none focus:ring-2 focus:ring-amber-300"
             />
           </label>
         </div>
@@ -121,7 +121,7 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
             type="button"
             onClick={handleSignIn}
             disabled={loading}
-            className="rounded-2xl bg-amber-400 px-4 py-3 text-sm font-semibold text-[var(--text-on-accent)] shadow-[8px_8px_18px_var(--shadow-dark),-8px_-8px_18px_var(--shadow-light)] transition hover:brightness-95 disabled:opacity-60"
+            className="rounded-[20px] bg-amber-400 px-4 py-3 text-sm font-semibold text-[var(--text-on-accent)] shadow-[var(--shadow-elevation)] transition hover:brightness-95 disabled:opacity-60"
           >
             Sign in
           </button>
@@ -129,12 +129,12 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
             type="button"
             onClick={handleSignUp}
             disabled={loading}
-            className="rounded-2xl bg-[var(--surface-alt)] px-4 py-3 text-sm font-semibold text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
+            className="rounded-[20px] bg-[var(--surface-alt)] px-4 py-3 text-sm font-semibold text-[var(--text-strong)] shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
           >
             Create account
           </button>
         </div>
-        <div className="mt-4 rounded-2xl bg-[var(--surface-alt)] px-4 py-4 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]">
+        <div className="mt-4 rounded-[20px] bg-[var(--surface-alt)] px-4 py-4 shadow-[inset_4px_4px_10px_var(--shadow-dark),inset_-4px_-4px_10px_var(--shadow-light)]">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-muted)]">Captcha check</p>
           <p className="mt-2 text-xs text-[var(--text-muted)]">
             Required to start the demo and may be requested for sign-in.
@@ -152,7 +152,7 @@ export default function AuthPanel({ onAuthed, onDemoStart }: AuthPanelProps) {
           type="button"
           onClick={handleDemo}
           disabled={loading}
-          className="mt-4 w-full rounded-2xl bg-[var(--surface-soft-strong)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[6px_6px_14px_var(--shadow-dark),-6px_-6px_14px_var(--shadow-light)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
+          className="mt-4 w-full rounded-[20px] bg-[var(--surface-soft-strong)] px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-body)] shadow-[var(--shadow-elevation)] transition hover:text-[var(--text-primary)] disabled:opacity-60"
         >
           I want a demo
         </button>
