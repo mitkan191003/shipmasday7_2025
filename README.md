@@ -1,3 +1,5 @@
+A simple website to track and journal visits to any of the 63 national parks.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
